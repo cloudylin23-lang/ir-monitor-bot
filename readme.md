@@ -52,8 +52,8 @@ pip install -r requirements.txt
 
 # Cài đặt trình duyệt cho Playwright
 playwright install chromium
-
-3. Cấu hình biến môi trường (.env)
+```
+### 3. Cấu hình biến môi trường (.env)
 
 Tạo file `.env` tại thư mục gốc của dự án và cấu hình các biến sau:
 
@@ -64,8 +64,9 @@ GEMINI_API_KEY=your_gemini_key
 # Cấu hình Weaviate Cloud
 WEAVIATE_URL=https://your-cluster-id.weaviate.network
 WEAVIATE_API_KEY=your_wcs_api_key
+```
 
-📂 Cấu trúc mã nguồn
+### 📂 Cấu trúc mã nguồn
 src/database.py
 Quản lý SQLite (lưu trữ Tickers, Subscribers và Cache Layer).
 src/engine.py

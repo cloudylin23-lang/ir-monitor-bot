@@ -2,26 +2,40 @@ name: IR Monitor Bot
 
 on:
   schedule:
-    - cron: '0 1,9 * * *' # Chạy vào 8:00 sáng và 4:00 chiều giờ VN (UTC+7)
-  workflow_dispatch:      # Cho phép bạn bấm nút chạy thử thủ công trên GitHub
+    - cron: '0 1,9 * * *' # 8:00 & 16:00 giờ VN (UTC+7)
+  workflow_dispatch:
+
+# FIX QUAN TRỌNG: cho phép push lại repo
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2. Setup Python (FIX Python version issue)
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
+      # 3. Install dependencies
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-          python -m playwright install chromium
 
+      # 4. Install Playwright (FIX missing system deps)
+      - name: Install Playwright browsers
+        run: |
+          python -m playwright install --with-deps chromium
+
+      # 5. Run bot
       - name: Run Monitor Bot
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -29,10 +43,15 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python main.py
 
+      # 6. Commit + push data updates safely
       - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          git add data/processed_hash.db
-          git commit -m "Update processed news database" || echo "No changes to commit"
+
+          git add -A
+
+          # tránh lỗi "nothing to commit"
+          git diff --cached --quiet || git commit -m "Update processed data"
+
           git push

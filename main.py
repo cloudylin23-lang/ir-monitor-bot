@@ -24,11 +24,21 @@ from src.engine import (
     query_historical_news, extract_text_from_pdf
 )
 
-# Cấu hình log và môi trường
 logging.basicConfig(level=logging.INFO)
-load_dotenv()
+
+# chỉ load .env khi chạy local
+if os.path.exists(".env"):
+    load_dotenv()
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
+# debug để check GitHub có nhận không
+print("TOKEN EXISTS:", TOKEN is not None)
+
+# fail sớm nếu thiếu
+if not TOKEN:
+    raise ValueError("Missing TELEGRAM_BOT_TOKEN")
+
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 

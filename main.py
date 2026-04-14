@@ -26,19 +26,24 @@ from src.engine import (
 
 logging.basicConfig(level=logging.INFO)
 
-# chỉ load .env khi chạy local
+# Chỉ load .env khi chạy local
 if os.path.exists(".env"):
     load_dotenv()
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+# Lấy token và dùng .strip() để xóa bỏ khoảng trắng/dấu xuống dòng thừa
+raw_token = os.getenv("TELEGRAM_BOT_TOKEN")
+TOKEN = raw_token.strip() if raw_token else None
 
-# debug để check GitHub có nhận không
-print("TOKEN EXISTS:", TOKEN is not None)
+# Debug để check
+print(f"TOKEN EXISTS: {TOKEN is not None}")
+if TOKEN:
+    print(f"TOKEN LENGTH: {len(TOKEN)}") # Để kiểm tra độ dài có khớp ~46 ký tự không
 
-# fail sớm nếu thiếu
+# Fail sớm nếu thiếu
 if not TOKEN:
     raise ValueError("Missing TELEGRAM_BOT_TOKEN")
 
+# Khởi tạo Bot với token đã được làm sạch
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
